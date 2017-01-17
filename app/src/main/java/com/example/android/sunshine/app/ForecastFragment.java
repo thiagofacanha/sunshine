@@ -5,6 +5,7 @@ package com.example.android.sunshine.app;
  */
 
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -37,6 +39,7 @@ public class ForecastFragment extends Fragment {
 
     private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
     private ArrayAdapter<String> mForecastArrayAdapter;
+
     public ForecastFragment() {
     }
 
@@ -61,9 +64,17 @@ public class ForecastFragment extends Fragment {
 
         mForecastArrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_text_view, mFakeData);
 
-        ListView mForecastListView = (ListView) rootView.findViewById(R.id.listview_forecast);
+        final ListView mForecastListView = (ListView) rootView.findViewById(R.id.listview_forecast);
         mForecastListView.setAdapter(mForecastArrayAdapter);
-
+        mForecastListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String forecast = mForecastArrayAdapter.getItem(position);
+                Intent detailIntent = new Intent(getActivity(),DetailActivity.class);
+                detailIntent.putExtra(Intent.EXTRA_TEXT,forecast);
+                startActivity(detailIntent);
+            }
+        });
         return rootView;
     }
 
@@ -72,10 +83,10 @@ public class ForecastFragment extends Fragment {
 
         @Override
         protected void onPostExecute(String[] strings) {
-          if(strings != null){
-              mForecastArrayAdapter.clear();
-              mForecastArrayAdapter.addAll(strings);
-          }
+            if (strings != null) {
+                mForecastArrayAdapter.clear();
+                mForecastArrayAdapter.addAll(strings);
+            }
         }
 
         @Override
